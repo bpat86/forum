@@ -1,5 +1,5 @@
 # Forum
-This is an open-sourced forum built with Laravel.
+This is an open-sourced forum built with Laravel. It's very much a work in progress. It's about as basic as it gets and is largely unstyled aside from basic Bootstrap formatting.
 
 ## Installation
 
