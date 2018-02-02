@@ -35,6 +35,12 @@ Then, migrate your database to create tables.
 php artisan migrate
 ```
 
+Then, if you wish to, run the database seeders to populate the forum with sample data.
+
+```
+php artisan db:seed
+```
+
 ### Step 3.
 
 reCAPTCHA is a Google tool to help prevent forum spam. You'll need to create a free account (don't worry, it's quick).
