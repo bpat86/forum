@@ -2,6 +2,8 @@
 
 return [
     'administrators' => [
-        // Add the email addresses of users who should be administrators here.
+        'admin@example.com',
+        'john@example.com',
+        'b.patterson0486@gmail.com'
     ]
 ];

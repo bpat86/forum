@@ -1,5 +1,5 @@
 {{-- Editing the question. --}}
-<div class="panel panel-default" v-if="editing">
+<div class="panel panel-default" v-if="editing" v-cloak>
     <div class="panel-heading">
         <div class="level">
             <input type="text" class="form-control" v-model="form.title">

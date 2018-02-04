@@ -44,9 +44,21 @@ Route::delete('/replies/{reply}/favorites', 'FavoritesController@destroy')->name
 
 Route::get('/profiles/{user}', 'ProfilesController@show')->name('profile');
 Route::get('/profiles/{user}/notifications', 'UserNotificationsController@index')->name('user-notifications');
-Route::delete('/profiles/{user}/notifications/{notification}', 'UserNotificationsController@destroy')->name('user-notification.destroy');
+Route::delete('/profiles/{user}/notifications/{notification}', 'UserNotificationsController@destroy')
+    ->name('user-notification.destroy');
 
 Route::get('/register/confirm', 'Auth\RegisterConfirmationController@index')->name('register.confirm');
 
 Route::get('api/users', 'Api\UsersController@index')->name('api.users');
 Route::post('api/users/{user}/avatar', 'Api\UserAvatarController@store')->middleware('auth')->name('avatar');
+
+Route::group([
+    'prefix' => 'admin',
+    'middleware' => 'admin',
+    'namespace' => 'Admin'
+], function () {
+    Route::get('/', 'DashboardController@index')->name('admin.dashboard.index');
+    Route::post('/channels', 'ChannelsController@store')->name('admin.channels.store');
+    Route::get('/channels', 'ChannelsController@index')->name('admin.channels.index');
+    Route::get('/channels/create', 'ChannelsController@create')->name('admin.channels.create');
+});
