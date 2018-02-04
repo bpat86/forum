@@ -3,13 +3,13 @@
 namespace Tests\Unit;
 
 use App\Notifications\ThreadWasUpdated;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class ThreadTest extends TestCase
 {
-    use DatabaseMigrations;
+    use RefreshDatabase;
 
     protected $thread;
 
@@ -47,6 +47,19 @@ class ThreadTest extends TestCase
     }
 
     /** @test */
+    public function a_thread_can_have_a_best_reply()
+    {
+        $reply = $this->thread->addReply([
+            'body' => 'Foobar',
+            'user_id' => 1
+        ]);
+
+        $this->thread->markBestReply($reply);
+
+        $this->assertEquals($reply->id, $this->thread->bestReply->id);
+    }
+
+    /** @test */
     public function a_thread_can_add_a_reply()
     {
         $this->thread->addReply([
@@ -67,7 +80,7 @@ class ThreadTest extends TestCase
             ->subscribe()
             ->addReply([
                 'body' => 'Foobar',
-                'user_id' => 999
+                'user_id' => create('App\User')->id
             ]);
 
         Notification::assertSentTo(auth()->user(), ThreadWasUpdated::class);

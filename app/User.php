@@ -100,7 +100,7 @@ class User extends Authenticatable
      */
     public function isAdmin()
     {
-        return in_array($this->name, ['JohnDoe', 'JaneDoe', 'BobbyPatterson']);
+        return in_array($this->name, ['JohnDoe', 'JaneDoe']);
     }
 
     /**

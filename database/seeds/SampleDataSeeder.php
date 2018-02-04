@@ -51,7 +51,7 @@ class SampleDataSeeder extends Seeder
         $threads = factory(Thread::class, 50)->create();
 
         $threads->each(function ($thread) {
-            factory(Reply::class, 25)->create(['thread_id' => $thread->id]);
+            factory(Reply::class, 10)->create(['thread_id' => $thread->id]);
         });
     }
 }

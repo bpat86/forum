@@ -4,6 +4,7 @@ namespace App;
 
 use App\Events\ThreadReceivedNewReply;
 use App\Filters\ThreadFilters;
+use App\Notifications\YouWereMentioned;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Searchable;
@@ -49,12 +50,18 @@ class Thread extends Model
     {
         parent::boot();
 
-        static::deleting(function ($thread) {
-            $thread->replies->each->delete();
-        });
-
         static::created(function ($thread) {
             $thread->update(['slug' => $thread->title]);
+
+            $thread->notifyMentionedUsers();
+
+            Reputation::gain($thread->creator, Reputation::THREAD_WAS_PUBLISHED);
+        });
+
+        static::deleting(function ($thread) {
+            $thread->replies->each->delete();
+
+            Reputation::lose($thread->creator, Reputation::THREAD_WAS_PUBLISHED);
         });
     }
 
@@ -99,6 +106,16 @@ class Thread extends Model
     }
 
     /**
+     * A thread can have a best reply.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function bestReply()
+    {
+        return $this->hasOne(Reply::class, 'thread_id');
+    }
+
+    /**
      * Add a reply to the thread.
      *
      * @param  array $reply
@@ -127,6 +144,25 @@ class Thread extends Model
     public function unlock()
     {
         $this->update(['locked' => false]);
+    }
+
+    /**
+     * Fetch all mentioned users within the thread's body.
+     *
+     * @return bool
+     */
+    public function notifyMentionedUsers()
+    {
+        preg_match_all('/@([\w\-]+)/', $this->body, $matches);
+        if (isset($matches[1])) {
+            User::whereIn('name', $matches[1])
+                ->get()
+                ->each(function ($user) {
+                    $user->notify(new YouWereMentioned($this));
+                });
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -245,7 +281,23 @@ class Thread extends Model
      */
     public function markBestReply(Reply $reply)
     {
+        if ($this->hasBestReply()) {
+            Reputation::lose($this->bestReply->owner, Reputation::BEST_REPLY_AWARDED);
+        }
+
         $this->update(['best_reply_id' => $reply->id]);
+
+        Reputation::gain($reply->owner, Reputation::BEST_REPLY_AWARDED);
+    }
+
+    /**
+     * Determine if the thread has a current best reply.
+     *
+     * @return bool
+     */
+    public function hasBestReply()
+    {
+        return ! is_null($this->best_reply_id);
     }
 
     /**

@@ -1,8 +1,10 @@
 @extends('layouts.app')
 
 @section ('head')
+    <link rel="stylesheet" href="/css/vendor/jquery.atwho.css">
     <script src='https://www.google.com/recaptcha/api.js'></script>
 @endsection
+
 
 @section('content')
     <div class="container">
@@ -40,7 +42,7 @@
                             </div>
 
                             <div class="form-group">
-                                <div class="g-recaptcha" data-sitekey="{{ config('forum.recaptcha.key') }}"></div>
+                                <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.key') }}"></div>
                             </div>
 
                             <div class="form-group">

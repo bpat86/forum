@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class BestReplyTest extends TestCase
 {
@@ -18,13 +18,15 @@ class BestReplyTest extends TestCase
 
         $replies = create('App\Reply', ['thread_id' => $thread->id], 2);
 
+        $this->assertFalse($replies[1]->isBest());
+
         $this->postJson(route('best-replies.store', [$replies[1]->id]));
 
         $this->assertTrue($replies[1]->fresh()->isBest());
     }
 
     /** @test */
-    public function only_the_thread_creator_can_mark_the_reply_as_best()
+    public function only_the_thread_creator_may_mark_a_reply_as_best()
     {
         $this->withExceptionHandling();
 
