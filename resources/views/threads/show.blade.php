@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-    <thread-view :thread="{{ $thread }}" inline-template>
+    <thread-view :thread="{{ $thread }}" inline-template v-cloak>
         <div class="container">
             <div class="row">
                 <div class="col-md-8" v-cloak>
