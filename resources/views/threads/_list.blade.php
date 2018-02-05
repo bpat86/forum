@@ -30,9 +30,7 @@
         </div>
 
         <div class="panel-body">
-            <thread-view :thread="{{ $thread }}" inline-template>
-                <highlight :content="body"></highlight>
-            </thread-view>
+            <div class="body">{!! $thread->body !!}</div>
         </div>
 
         <div class="panel-footer">
