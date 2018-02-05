@@ -5,6 +5,9 @@
                 <div class="flex">
                     <h4>
                         <a href="{{ $thread->path() }}">
+                            @if ($thread->pinned)
+                                <span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span>
+                            @endif
                             @if (auth()->check() && $thread->hasUpdatesFor(auth()->user()))
                                 <strong>
                                     {{ $thread->title }}
@@ -27,7 +30,9 @@
         </div>
 
         <div class="panel-body">
-            <div class="body">{!! $thread->body !!}</div>
+            <thread-view :thread="{{ $thread }}" inline-template>
+                <highlight :content="body"></highlight>
+            </thread-view>
         </div>
 
         <div class="panel-footer">
