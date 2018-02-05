@@ -84347,6 +84347,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
 
 
 
@@ -84362,6 +84366,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     computed: {
         confirmed: function confirmed() {
             return window.App.user.confirmed;
+        },
+        active: function active() {
+            return window.App.user.active;
+        },
+        suspensionSupport: function suspensionSupport() {
+            return "mailto:" + window.App.suspension.support + "?Subject=Re:%20Account%20suspension";
         }
     },
 
@@ -84385,7 +84395,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var _this = this;
 
             axios.post(location.pathname + '/replies', { body: this.body }).catch(function (error) {
-                flash(error.response.data, 'danger');
+                flash(error.response.data.reason, 'danger');
             }).then(function (_ref) {
                 var data = _ref.data;
 
@@ -86067,10 +86077,26 @@ var render = function() {
   return _c("div", [
     !_vm.signedIn
       ? _c("div", [_vm._m(0)])
-      : !_vm.confirmed
+      : !_vm.active
         ? _c("div", [
-            _vm._v(
-              "\n        To participate in this thread, please check your email and confirm your account.\n    "
+            _c(
+              "div",
+              { staticClass: "alert alert-warning", attrs: { role: "alert" } },
+              [
+                _c("p", [
+                  _vm._v(
+                    "You are unable to reply to threads as your account is currently suspended."
+                  )
+                ]),
+                _vm._v(" "),
+                _c("p", [
+                  _vm._v("Please "),
+                  _c("a", { attrs: { href: _vm.suspensionSupport } }, [
+                    _vm._v("Contact Support")
+                  ]),
+                  _vm._v(" for assistance.")
+                ])
+              ]
             )
           ])
         : _c("div", [

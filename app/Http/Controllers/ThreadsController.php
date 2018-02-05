@@ -114,6 +114,7 @@ class ThreadsController extends Controller
             'title' => 'required',
             'body' => 'required'
         ]));
+
         return $thread;
     }
 

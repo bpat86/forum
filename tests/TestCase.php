@@ -3,9 +3,9 @@
 namespace Tests;
 
 use App\Exceptions\Handler;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
-use Illuminate\Support\Facades\DB;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -28,6 +28,33 @@ abstract class TestCase extends BaseTestCase
 
         return $this;
     }
+
+    protected function signInAdmin($admin = null)
+    {
+        $admin = $admin ?: create('App\User');
+
+        config(['forum.administrators' => [$admin->email]]);
+
+        $this->actingAs($admin);
+
+        return $this;
+    }
+
+
+    /**
+     * @return mixed
+     */
+    protected function signInSuspended($suspendedUser = null)
+    {
+        $suspendedUser = $suspendedUser ?: create('App\User', [
+            'active' => false
+        ]);
+
+        $this->actingAs($suspendedUser);
+
+        return $this;
+    }
+
 
     // Hat tip, @adamwathan.
     protected function disableExceptionHandling()

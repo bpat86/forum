@@ -8350,3 +8350,7 @@ button.close {
   }
 }
 
+.key-item-label {
+  margin-left: .5rem;
+}
+

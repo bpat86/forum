@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}">
+<html lang="{{ config('app.locale') }}">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,18 +8,25 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Blog') }}</title>
+    <title>{{ config('app.name', 'Laravel') }}</title>
 
+    <!-- Styles -->
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+
+    <!-- Scripts -->
     <script>
         window.App = {!! json_encode([
             'csrfToken' => csrf_token(),
             'user' => Auth::user(),
             'signedIn' => Auth::check()
-        ]) !!}
+        ]) !!};
+        @if(Auth::user() && ! Auth::user()->active) {
+            window.App.suspension = {!! json_encode([
+                'support' => config('council.support.suspension')
+            ]) !!};
+        }
+        @endif
     </script>
-
-    <!-- Styles -->
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 
     <style>
         body { padding-bottom: 100px; }
@@ -35,16 +42,16 @@
     @yield('head')
 </head>
 <body>
-    <div id="app">
-        @include('layouts.nav')
+<div id="app">
+    @include ('layouts.nav')
 
-        @yield('content')
+    @yield('content')
 
-        <flash message="{{ session('flash') }}"></flash>
-    </div>
+    <flash message="{{ session('flash') }}"></flash>
+</div>
 
-    <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}"></script>
-    @yield('scripts')
+<!-- Scripts -->
+<script src="{{ asset('js/app.js') }}"></script>
+@yield('scripts')
 </body>
 </html>
