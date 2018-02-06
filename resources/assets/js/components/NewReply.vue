@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="new-reply">
         <div v-if="! signedIn">
             <p class="text-center">
                 Please <a href="/login">sign in</a> to participate in this
@@ -7,13 +7,9 @@
             </p>
         </div>
 
-        <div v-else-if="! active">
-            <div class="alert alert-warning" role="alert">
-                <p>You are unable to reply to threads as your account is currently suspended.</p>
-                <p>Please <a :href="suspensionSupport">Contact Support</a> for assistance.</p>
-            </div>
+        <div v-else-if="! confirmed">
+            To participate in this thread, please check your email and confirm your account.
         </div>
-
 
         <div v-else>
             <div class="form-group">
@@ -41,12 +37,6 @@
         computed: {
             confirmed() {
                 return window.App.user.confirmed;
-            },
-            active() {
-                return window.App.user.active;
-            },
-            suspensionSupport() {
-                return "mailto:" + window.App.suspension.support + "?Subject=Re:%20Account%20suspension";
             }
         },
 
@@ -81,3 +71,11 @@
         }
     }
 </script>
+
+<style scoped>
+ .new-reply {
+     padding: 15px;
+     background-color: #fff;
+     border: 1px solid #e3e3e3;
+ }
+</style>

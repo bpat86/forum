@@ -7,8 +7,8 @@ use App\Channel;
 use App\Trending;
 use App\Rules\SpamFree;
 use App\Rules\Recaptcha;
-use Illuminate\Http\Request;
 use App\Filters\ThreadFilters;
+use Illuminate\Validation\Rule;
 
 class ThreadsController extends Controller
 {
@@ -49,7 +49,9 @@ class ThreadsController extends Controller
      */
     public function create()
     {
-        return view('threads.create');
+        return view('threads.create', [
+            'channels' => Channel::all()
+        ]);
     }
 
     /**
@@ -63,7 +65,12 @@ class ThreadsController extends Controller
         request()->validate([
             'title' => ['required', new SpamFree],
             'body' => ['required', new SpamFree],
-            'channel_id' => 'required|exists:channels,id',
+            'channel_id' => [
+                'required',
+                Rule::exists('channels', 'id')->where(function ($query) {
+                    $query->where('archived', false);
+                })
+            ],
             'g-recaptcha-response' => ['required', $recaptcha]
         ]);
         $thread = Thread::create([

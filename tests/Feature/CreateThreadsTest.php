@@ -3,10 +3,10 @@
 namespace Tests\Feature;
 
 use App\Activity;
+use Tests\TestCase;
 use App\Rules\Recaptcha;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
-use Tests\TestCase;
 
 class CreateThreadsTest extends TestCase
 {
@@ -17,9 +17,9 @@ class CreateThreadsTest extends TestCase
         parent::setUp();
 
         app()->singleton(Recaptcha::class, function () {
-            $m = \Mockery::mock(Recaptcha::class);
-            $m->shouldReceive('passes')->andReturn(true);
-            return $m;
+            return \Mockery::mock(Recaptcha::class, function ($m) {
+                $m->shouldReceive('passes')->andReturn(true);
+            });
         });
     }
 
@@ -76,6 +76,10 @@ class CreateThreadsTest extends TestCase
     /** @test */
     public function a_thread_requires_recaptcha_verification()
     {
+        if (Recaptcha::isInTestMode()) {
+            $this->markTestSkipped("Recaptcha is in test mode.");
+        }
+
         unset(app()[Recaptcha::class]);
 
         $this->publishThread(['g-recaptcha-response' => 'test'])
@@ -149,6 +153,23 @@ class CreateThreadsTest extends TestCase
         $this->assertDatabaseMissing('replies', ['id' => $reply->id]);
 
         $this->assertEquals(0, Activity::count());
+    }
+
+    /** @test */
+    public function a_new_thread_cannot_be_created_in_an_archived_channel()
+    {
+        $channel = factory('App\Channel')->create();
+
+        $response = $this->publishThread(['title' => 'Some Title', 'body' => 'Some body.']);
+
+        $this->get($response->headers->get('Location'))
+            ->assertSee('Some Title')
+            ->assertSee('Some body.');
+
+        $channel->archive();
+
+        $this->publishThread(['channel_id' => $channel->id])
+            ->assertSessionHasErrors('channel_id');
     }
 
     protected function publishThread($overrides = [])
