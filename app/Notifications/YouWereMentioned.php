@@ -2,8 +2,6 @@
 
 namespace App\Notifications;
 
-use App\Reply;
-use App\Thread;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 
@@ -12,22 +10,18 @@ class YouWereMentioned extends Notification
     use Queueable;
 
     /**
-     * @var \App\Reply or \App\Thread
+     * @var \App\Reply
      */
-    protected $subject;
+    protected $reply;
 
     /**
      * Create a new notification instance.
      *
-     * @param $subject
+     * @param \App\Reply $reply
      */
-    public function __construct($subject)
+    public function __construct($reply)
     {
-        $this->subject = $subject;
-
-        $isReply = ($subject instanceof Reply);
-        $this->subject['title'] = $isReply ? $subject->thread->title : $subject->title;
-        $this->subject['owner'] = $isReply ? $subject->owner->name : $subject->creator->name;
+        $this->reply = $reply;
     }
 
     /**
@@ -50,8 +44,8 @@ class YouWereMentioned extends Notification
     public function toArray($notifiable)
     {
         return [
-            'message' => $this->subject['owner'] . ' mentioned you in ' . $this->subject['title'],
-            'link' => $this->subject->path()
+            'message' => $this->reply->owner->name.' mentioned you in '.$this->reply->thread->title,
+            'link' => $this->reply->path()
         ];
     }
 }
