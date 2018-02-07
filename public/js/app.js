@@ -82787,17 +82787,34 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         return { notifications: false };
     },
     created: function created() {
-        var _this = this;
-
-        axios.get('/profiles/' + window.App.user.name + '/notifications').then(function (response) {
-            return _this.notifications = response.data;
-        });
+        this.fetchNotifications();
     },
 
 
+    computed: {
+        endpoint: function endpoint() {
+            return "/profiles/" + window.App.user.name + "/notifications";
+        }
+    },
+
     methods: {
+        fetchNotifications: function fetchNotifications() {
+            var _this = this;
+
+            axios.get(this.endpoint).then(function (response) {
+                return _this.notifications = response.data;
+            });
+        },
         markAsRead: function markAsRead(notification) {
-            axios.delete('/profiles/' + window.App.user.name + '/notifications/' + notification.id);
+            var _this2 = this;
+
+            axios.delete(this.endpoint + "/" + notification.id).then(function (_ref) {
+                var data = _ref.data;
+
+                _this2.fetchNotifications();
+
+                document.location.replace(data.link);
+            });
         }
     }
 });
@@ -82818,12 +82835,13 @@ var render = function() {
           "ul",
           { staticClass: "dropdown-menu" },
           _vm._l(_vm.notifications, function(notification) {
-            return _c("li", [
+            return _c("li", { key: notification.id }, [
               _c("a", {
                 attrs: { href: notification.data.link },
                 domProps: { textContent: _vm._s(notification.data.message) },
                 on: {
                   click: function($event) {
+                    $event.preventDefault()
                     _vm.markAsRead(notification)
                   }
                 }
